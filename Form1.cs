@@ -11,19 +11,12 @@ namespace Lab2
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //if (int.TryParse(txtNa.Text, out int N_a) &&
-            //   int.TryParse(txtNThreads.Text, out int N_threads) &&
-            //   int.TryParse(txtK.Text, out int K) &&
-            //   int.TryParse(txtDeltaThreads.Text, out int Delta_threads) &&
-            //   int.TryParse(txtDeltaK.Text, out int Delta_K))
-            if (true)
+            if (int.TryParse(txtNa.Text, out int N_a) &&
+               int.TryParse(txtNThreads.Text, out int N_threads) &&
+               int.TryParse(txtK.Text, out int K) &&
+               int.TryParse(txtDeltaThreads.Text, out int Delta_threads) &&
+               int.TryParse(txtDeltaK.Text, out int Delta_K))
             {
-                int N_threads = 4; // Замените на ваши значения параметров
-                int Delta_threads = 1;
-                int Delta_K = 10;
-                int K = 100;
-                int N_a = 10000;
-
                 // Создаем массив случайных чисел
                 double[] a = GenerateRandomArray(N_a);
 
@@ -109,6 +102,11 @@ namespace Lab2
             var processorInfo = GetProcessorInfo();
             clockFreq.Text = $"{processorInfo.ClockSpeed.ToString()} ГГц";
             countCore.Text = processorInfo.CoreCount.ToString();
+            txtNThreads.Text = 4.ToString(); // Замените на ваши значения параметров
+            txtDeltaThreads.Text = 1.ToString();
+            txtDeltaK.Text = 10.ToString();
+            txtK.Text = 100.ToString();
+            txtNa.Text = 10000.ToString();
         }
     }
     public class ProcessorInfo
