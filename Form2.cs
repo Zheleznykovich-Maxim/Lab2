@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Lab2
 {
@@ -60,10 +61,10 @@ namespace Lab2
             // Добавляем график на форму
             this.Controls.Add(chart);
 
-            DrawChart(N_threads, Delta_threads, Delta_K, K, N_a);
+            DrawChartWithMultithreading(N_threads, Delta_threads, Delta_K, K, N_a);
         }
 
-        public void DrawChart(int N_threads, int Delta_threads, int Delta_K, int K, int N_a)
+        public void DrawChartWithMultithreading(int N_threads, int Delta_threads, int Delta_K, int K, int N_a)
         {
             try
             {
@@ -71,7 +72,8 @@ namespace Lab2
                 Series series1 = new Series("График 1");
                 series1.ChartType = SeriesChartType.Line;
                 series1.ChartArea = "ChartArea1"; // Указываем область для этой серии
-
+                series1.Color = Color.Blue;
+                series1.BorderWidth = 2;
                 for (int i = 1; i <= N_threads; i++)
                 {
                     double elapsedTime = MeasureCalculationTime(i, K);
@@ -84,7 +86,8 @@ namespace Lab2
                 Series series2 = new Series("График 2");
                 series2.ChartType = SeriesChartType.Line;
                 series2.ChartArea = "ChartArea2"; // Указываем область для этой серии
-
+                series2.Color = Color.Blue;
+                series2.BorderWidth = 2;
                 double Max_K = K; // Максимальное значение K
 
                 for (double currentK = 1.0; currentK <= Max_K; currentK += Delta_K)
@@ -94,6 +97,34 @@ namespace Lab2
                 }
 
                 chart.Series.Add(series2);
+
+                // Создаем график 3: Ось OX - количество потоков, Ось OY - время выполнения расчетов (с многопоточностью)
+                Series series3 = new Series("График 1 (Multithreaded)");
+                series3.Color = Color.Red;
+                series3.ChartType = SeriesChartType.Line;
+                series3.ChartArea = "ChartArea1"; // Указываем область для этой серии
+                series3.BorderWidth = 2;
+                for (int i = 1; i <= N_threads; i++)
+                {
+                    double elapsedTime = MeasureMultithreadedCalculationTime(i, K);
+                    series3.Points.AddXY(i, elapsedTime);
+                }
+
+                chart.Series.Add(series3);
+
+                // Создаем график 4: Ось OX - Параметр сложности K, Ось OY - время выполнения расчетов (с многопоточностью)
+                Series series4 = new Series("График 2 (Multithreaded)");
+                series4.Color = Color.Red;
+                series4.ChartType = SeriesChartType.Line;
+                series4.ChartArea = "ChartArea2"; // Указываем область для этой серии
+                series4.BorderWidth = 2;
+                for (double currentK = 1.0; currentK <= Max_K; currentK += Delta_K)
+                {
+                    double elapsedTime = MeasureMultithreadedCalculationTime(N_threads, currentK);
+                    series4.Points.AddXY(currentK, elapsedTime);
+                }
+
+                chart.Series.Add(series4);
             }
             catch (Exception ex)
             {
@@ -121,6 +152,36 @@ namespace Lab2
                     b[j] = Math.Pow(a[j], 1.789);
                 });
             }
+
+            // Останавливаем таймер
+            stopwatch.Stop();
+
+            // Получаем время выполнения в миллисекундах
+            double elapsedTime = stopwatch.ElapsedMilliseconds;
+
+            return elapsedTime;
+        }
+
+        private double MeasureMultithreadedCalculationTime(int N_threads, double K)
+        {
+            // Создаем массив случайных чисел
+            double[] a = GenerateRandomArray(N_a);
+
+            // Создаем объект Stopwatch для измерения времени выполнения
+            Stopwatch stopwatch = new Stopwatch();
+
+            // Запускаем таймер
+            stopwatch.Start();
+
+            // Выполняем расчеты с использованием многопоточности
+            Parallel.For(0, N_threads, i =>
+            {
+                double[] b = new double[a.Length];
+                Parallel.For(0, a.Length, j =>
+                {
+                    b[j] = Math.Pow(a[j], 1.789);
+                });
+            });
 
             // Останавливаем таймер
             stopwatch.Stop();
