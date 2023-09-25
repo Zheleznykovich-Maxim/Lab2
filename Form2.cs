@@ -143,7 +143,7 @@ namespace Lab2
             // Запускаем таймер
             stopwatch.Start();
 
-            // Выполняем расчеты
+            // В ыполняем расчеты
             double[] b = new double[N_a];
             for (int i = 0; i < a.Length; i++)
             {
@@ -211,19 +211,6 @@ namespace Lab2
 
             return elapsedTime;
         }
-
-        public void CalculateChunk(int start, int end, double[] a, double[] b)
-        {
-            for (int i = start; i < end; i++)
-            {
-                for (int j = 0; j < K; j++)
-                {
-                    b[i] += Math.Pow(a[i], 1.789);
-                }
-            }
-        }
-
-
         private double[] GenerateRandomArray(int N_a)
         {
             Random random = new Random();
