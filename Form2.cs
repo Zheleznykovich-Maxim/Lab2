@@ -144,13 +144,13 @@ namespace Lab2
             stopwatch.Start();
 
             // Выполняем расчеты
-            for (int i = 0; i < N_a; i++)
+            double[] b = new double[N_a];
+            for (int i = 0; i < a.Length; i++)
             {
-                double[] b = new double[a.Length];
-                Parallel.For(0, a.Length, j =>
+                for (int j = 0; j < K; j++)
                 {
-                    b[j] = Math.Pow(a[j], 1.789);
-                });
+                    b[i] += (int)Math.Pow(a[i], 1.789);
+                }
             }
 
             // Останавливаем таймер
@@ -173,43 +173,55 @@ namespace Lab2
             // Запускаем таймер
             stopwatch.Start();
 
-            List<double> elapsedTimes = new List<double>();
-            int iterations = 10; // Количество итераций для анализа
+            double[] b = new double[N_a];
+            Thread[] threads = new Thread[N_threads];
 
-            for (int iteration = 0; iteration < iterations; iteration++)
+            // Разделяем массив a на сегменты для каждого потока
+            int segmentSize = N_a / N_threads;
+            for (int i = 0; i < N_threads; i++)
             {
-                Parallel.For(0, N_threads, i =>
+                int startIndex = i * segmentSize;
+                int endIndex = (i == N_threads - 1) ? N_a : (i + 1) * segmentSize;
+
+                threads[i] = new Thread(() =>
                 {
-                    int startIndex = i * (a.Length / N_threads);
-                    int endIndex = (i == N_threads - 1) ? a.Length : (i + 1) * (a.Length / N_threads);
-
-                    double threadElapsedTime = 0;
-
                     for (int j = startIndex; j < endIndex; j++)
                     {
-                        var threadStopwatch = new Stopwatch();
-                        threadStopwatch.Start();
-                        a[j] = Math.Pow(a[j], 1.789);
-                        threadStopwatch.Stop();
-                        threadElapsedTime += threadStopwatch.ElapsedMilliseconds;
-                    }
-
-                    lock (elapsedTimes)
-                    {
-                        elapsedTimes.Add(threadElapsedTime);
+                        for (int k = 0; k < K; k++)
+                        {
+                            b[j] += Math.Pow(a[j], 1.789);
+                        }
                     }
                 });
+
+                threads[i].Start();
+            }
+
+            // Ждем завершения всех потоков
+            foreach (var thread in threads)
+            {
+                thread.Join();
             }
 
             // Останавливаем таймер
             stopwatch.Stop();
 
-            // В elapsedTimes у вас будут значения времени выполнения для каждой итерации.
-            // Вы можете использовать их для анализа и построения графика.
+            // Получаем время выполнения в миллисекундах
+            double elapsedTime = stopwatch.ElapsedMilliseconds;
 
-            return stopwatch.ElapsedMilliseconds;
+            return elapsedTime;
         }
 
+        public void CalculateChunk(int start, int end, double[] a, double[] b)
+        {
+            for (int i = start; i < end; i++)
+            {
+                for (int j = 0; j < K; j++)
+                {
+                    b[i] += Math.Pow(a[i], 1.789);
+                }
+            }
+        }
 
 
         private double[] GenerateRandomArray(int N_a)

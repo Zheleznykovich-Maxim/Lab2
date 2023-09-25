@@ -58,11 +58,11 @@ namespace Lab2
             var processorInfo = GetProcessorInfo();
             clockFreq.Text = $"{processorInfo.ClockSpeed.ToString()} ГГц";
             countCore.Text = processorInfo.CoreCount.ToString();
-            //txtNThreads.Text = 4.ToString(); // Замените на ваши значения параметров
-            //txtDeltaThreads.Text = 1.ToString();
-            //txtDeltaK.Text = 10.ToString();
-            //txtK.Text = 100.ToString();
-            //txtNa.Text = 10000.ToString();
+            txtNThreads.Text = 4.ToString(); // Замените на ваши значения параметров
+            txtDeltaThreads.Text = 1.ToString();
+            txtDeltaK.Text = 10.ToString();
+            txtK.Text = 100.ToString();
+            txtNa.Text = 1000.ToString();
         }
     }
     public class ProcessorInfo
