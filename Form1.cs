@@ -16,26 +16,7 @@ namespace Lab2
                int.TryParse(txtK.Text, out int K) &&
                int.TryParse(txtDeltaThreads.Text, out int Delta_threads) &&
                int.TryParse(txtDeltaK.Text, out int Delta_K))
-            {
-                // Создаем массив случайных чисел
-                double[] a = GenerateRandomArray(N_a);
-
-                // Многопоточные вычисления
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-
-                double[] b = MultithreadedCalculate(a, N_threads, K);
-
-                stopwatch.Stop();
-                double elapsedTime = stopwatch.ElapsedMilliseconds;
-
-                // Выводим результаты
-                //ResultTextBox.Text = $"Результаты расчетов:\r\n" +
-                //                     $"Время выполнения: {elapsedTime} мс\r\n" +
-                //                     $"Тактовая частота процессора: {processorInfo.ClockSpeed} ГГц\r\n" +
-                //                     $"Количество ядер процессора: {processorInfo.CoreCount}\r\n" +
-                //                     $"Результат первого элемента массива b: {b[0]}";
-                
+            {   
                 Form Form2 = new Form2(N_threads, Delta_threads, Delta_K, K, N_a);
                 Form2.Show();
             }
@@ -71,42 +52,17 @@ namespace Lab2
 
             return processorInfo;
         }
-        private double[] GenerateRandomArray(int N_a)
-        {
-            Random random = new Random();
-            double[] a = new double[N_a];
-            for (int i = 0; i < N_a; i++)
-            {
-                a[i] = random.NextDouble();
-            }
-            return a;
-        }
-        private double[] MultithreadedCalculate(double[] a, int N_threads, double K)
-        {
-            double[] b = new double[a.Length];
-
-            Parallel.For(0, a.Length, new ParallelOptions { MaxDegreeOfParallelism = N_threads }, i =>
-            {
-                for (int j = 0; j < K; j++)
-                {
-                    b[i] += Math.Pow(a[i], 1.789);
-                }
-            });
-
-            return b;
-        }
-
         private void Form1_Load(object sender, EventArgs e)
         {
             // Получим информацию о процессоре
             var processorInfo = GetProcessorInfo();
             clockFreq.Text = $"{processorInfo.ClockSpeed.ToString()} ГГц";
             countCore.Text = processorInfo.CoreCount.ToString();
-            txtNThreads.Text = 4.ToString(); // Замените на ваши значения параметров
-            txtDeltaThreads.Text = 1.ToString();
-            txtDeltaK.Text = 10.ToString();
-            txtK.Text = 100.ToString();
-            txtNa.Text = 10000.ToString();
+            //txtNThreads.Text = 4.ToString(); // Замените на ваши значения параметров
+            //txtDeltaThreads.Text = 1.ToString();
+            //txtDeltaK.Text = 10.ToString();
+            //txtK.Text = 100.ToString();
+            //txtNa.Text = 10000.ToString();
         }
     }
     public class ProcessorInfo

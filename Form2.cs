@@ -144,7 +144,7 @@ namespace Lab2
             stopwatch.Start();
 
             // Выполняем расчеты
-            for (int i = 0; i < N_threads; i++)
+            for (int i = 0; i < N_a; i++)
             {
                 double[] b = new double[a.Length];
                 Parallel.For(0, a.Length, j =>
@@ -173,24 +173,44 @@ namespace Lab2
             // Запускаем таймер
             stopwatch.Start();
 
-            // Выполняем расчеты с использованием многопоточности
-            Parallel.For(0, N_threads, i =>
+            List<double> elapsedTimes = new List<double>();
+            int iterations = 10; // Количество итераций для анализа
+
+            for (int iteration = 0; iteration < iterations; iteration++)
             {
-                double[] b = new double[a.Length];
-                Parallel.For(0, a.Length, j =>
+                Parallel.For(0, N_threads, i =>
                 {
-                    b[j] = Math.Pow(a[j], 1.789);
+                    int startIndex = i * (a.Length / N_threads);
+                    int endIndex = (i == N_threads - 1) ? a.Length : (i + 1) * (a.Length / N_threads);
+
+                    double threadElapsedTime = 0;
+
+                    for (int j = startIndex; j < endIndex; j++)
+                    {
+                        var threadStopwatch = new Stopwatch();
+                        threadStopwatch.Start();
+                        a[j] = Math.Pow(a[j], 1.789);
+                        threadStopwatch.Stop();
+                        threadElapsedTime += threadStopwatch.ElapsedMilliseconds;
+                    }
+
+                    lock (elapsedTimes)
+                    {
+                        elapsedTimes.Add(threadElapsedTime);
+                    }
                 });
-            });
+            }
 
             // Останавливаем таймер
             stopwatch.Stop();
 
-            // Получаем время выполнения в миллисекундах
-            double elapsedTime = stopwatch.ElapsedMilliseconds;
+            // В elapsedTimes у вас будут значения времени выполнения для каждой итерации.
+            // Вы можете использовать их для анализа и построения графика.
 
-            return elapsedTime;
+            return stopwatch.ElapsedMilliseconds;
         }
+
+
 
         private double[] GenerateRandomArray(int N_a)
         {
